@@ -1,0 +1,197 @@
+INPUT_FILE_NAME = "input.txt"
+KEY_FILE_NAME = "key.txt"
+OUTPUT_FILE_NAME = "output.txt"
+
+
+def getInput():
+    with open(INPUT_FILE_NAME) as file:
+        for line in file:
+            line = line.replace(" ", "")
+    return line
+
+
+def lineOutput(value, name):
+    output = name + "\n" + value + "\n" + "\n"
+    with open(OUTPUT_FILE_NAME, "a") as file:
+        file.write(output)
+
+
+def substitute(text):
+    textList = list(text)
+    keyList = []
+    subStr = ""
+    with open(KEY_FILE_NAME) as file:
+        for string in file:
+            for char in string:
+                keyList.append(char)
+
+    while len(keyList) <= len(textList):
+        keyList.extend(keyList)
+    for i in range(0,len(textList)):
+        newLetter = ((ord(textList[i]) - 65) + (ord(keyList[i]) - 65)) % 26
+        subStr += chr(newLetter + 65)
+    return subStr
+
+
+def padding(text):
+    padChars = 16 - (len(text) % 16)
+    text += (padChars * "A")
+    return text
+
+
+def boxOutput(value, name):
+    output = name + "\n"
+    counter = 0
+    for i in range(0,len(value), 4):
+        output += value[counter:counter+4] + "\n"
+        counter += 4
+        if counter % 16 == 0:
+            output += "\n"
+    with open(OUTPUT_FILE_NAME, "a") as file:
+        file.write(output)
+        print("")
+
+def shiftRows(text):
+    output = ""
+    counter = 0
+    l = [text[i:i+4] for i in range(0, len(text), 4)]
+    for i in range(0, len(l), 4):
+        output += l[counter] + "\n"
+        counter += 1
+        output += l[counter][1:] + l[counter][0] + "\n"
+        counter += 1
+        output += l[counter][2:] + l[counter][0:2] + "\n"
+        counter += 1
+        output += l[counter][3:] + l[counter][0:3] + "\n"
+        counter += 1
+        output += '\n'
+    return output
+
+def shiftOutput(text, name):
+    output = name + '\n' + text
+    with open(OUTPUT_FILE_NAME, "a") as file:
+        file.write(output)
+        print("")
+
+
+def removeNewLine(text):
+    text = text.replace("\n", "")
+    return text
+
+
+def parityBit(text):
+    output = ""
+    counter = 1
+    for char in text:
+        binary = "{0:b}".format(ord(char))
+        ones = binary.count("1")
+        if ones % 2 != 0:
+            binary = "1" + binary
+        else:
+            binary = "0" + binary
+        output += hex(int(binary, 2)) + " "
+        if counter % 4 == 0:
+            output += "\n"
+        if counter % 16 == 0:
+            output += "\n"
+        counter += 1
+    return output
+
+
+def removeHex(hexText):
+    hexText = hexText.replace("0x", "")
+    return hexText
+
+def mixColumns(text):
+    counter = 0
+    text = text.strip()
+    lis = text.split(" ")
+    a0List = []
+    a1List = []
+    a2List = []
+    a3List = []
+    for i in range(0, len(lis), 4):
+        c0 = getBin(lis[counter])
+        c1 = getBin(lis[counter+4])
+        c2 = getBin(lis[counter+8])
+        c3 = getBin(lis[counter+12])
+        counter += 1
+        if counter % 4 == 0:
+            counter += 12
+
+        a0 = int(RGF_mul(c0, 2),2) ^ int(RGF_mul(c1,3),2) ^ int(c2,2) ^ int(c3, 2)
+        a1 = int(c0, 2) ^ int(RGF_mul(c1, 2),2) ^ int(RGF_mul(c2, 3),2) ^ int(c3, 2)
+        a2 = int(c0, 2) ^ int(c1, 2) ^ int(RGF_mul(c2, 2),2) ^ int(RGF_mul(c3, 3),2)
+        a3 = int(RGF_mul(c0, 3),2) ^ int(c1,2) ^ int(c2, 2) ^ int(RGF_mul(c3, 2),2)
+
+        a0List.append(removeHex(str(hex(a0))))
+        a1List.append(removeHex(str(hex(a1))))
+        a2List.append(removeHex(str(hex(a2))))
+        a3List.append(removeHex(str(hex(a3))))
+
+    output = combineLists(a0List, a1List, a2List, a3List)
+    return output
+
+
+def RGF_mul(num, multi):
+    one = num[1:] + "0"
+    if multi == 3:
+        b = int(one, 2) ^ int(num, 2)
+        b = '{0:b}'.format(b).zfill(8)
+    else:
+        b = str(one)
+
+    if num[0] == "1":
+        b = int(b, 2) ^ int("00011011", 2)
+    else:
+        b = int(b,2)
+
+    return '{0:b}'.format(b).zfill(8)
+
+def combineLists(one, two, three, four):
+    counter = 0
+    output = []
+    for i in range(0, len(one), 4):
+        output.append(one[counter:counter+4])
+        output.append(two[counter:counter+4])
+        output.append(three[counter:counter+4])
+        output.append(four[counter:counter+4])
+        counter += 4
+    output = [item for sublist in output for item in sublist]
+    return output
+
+
+def getBin(hex):
+    return bin(int(hex, 16))[2:].zfill(8)
+
+
+def hexOutput(value, name):
+    counter = 0
+    output = name + "\n"
+    for i in value:
+        output += i + " "
+        counter += 1
+        if counter % 4 == 0:
+            output += "\n"
+        if counter % 16 == 0:
+            output += "\n"
+    with open(OUTPUT_FILE_NAME, "a") as file:
+        file.write(output)
+
+
+if __name__ == "__main__":
+    pre = getInput()
+    lineOutput(pre, "Preprocessing:")
+    sub = substitute(pre)
+    lineOutput(sub, "Substitution:")
+    pad = padding(sub)
+    boxOutput(pad, "Padding:")
+    sr = shiftRows(pad)
+    shiftOutput(sr, "ShiftRows:")
+    text = removeNewLine(sr)
+    parBit = parityBit(text)
+    parBit = removeHex(parBit)
+    lineOutput(parBit, "Parity:")
+    text = removeNewLine(parBit)
+    mixCol = mixColumns(text)
+    hexOutput(mixCol, "MixColumns:")
