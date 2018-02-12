@@ -1,3 +1,14 @@
+
+#Programming assignment 1
+#CS-465 Introduction to Cybersecurity
+#Audunn Hrafn Alexandersson
+#Login ID: aha0026
+#WVU ID: 800-267530
+#2/12/2018
+#
+# Program should be fully functional while we have both a key.txt and input.txt file in the working directory.
+
+
 #These are constants for the files for easier access.
 INPUT_FILE_NAME = "input.txt"
 KEY_FILE_NAME = "key.txt"
@@ -6,10 +17,13 @@ OUTPUT_FILE_NAME = "output.txt"
 
 #Gets the input from input file
 def getInput():
+    text = ""
     with open(INPUT_FILE_NAME) as file:
         for line in file:
-            line = line.replace(" ", "") #removes all the space from text
-    return line
+            text += line
+    text = text.replace(" ", "").replace(".", "").replace(",", "").replace("\n", "")  # removes unwanted chars and spaces
+
+    return text
 
 
 #Write string and name into file for the Preprocessing and Substitution part.
@@ -52,9 +66,11 @@ def padding(text):
 def writeBox(text, name):
     output = name + "\n"
     counter = 0
-
     for i in range(0,len(text), 4):
-        output += text[counter:counter+4] + "\n"
+        output += text[counter] + " "
+        output += text[counter+1] + " "
+        output += text[counter+2] + " "
+        output += text[counter+3] + " " + "\n"
         counter += 4
         if counter % 16 == 0:
             output += "\n"
@@ -124,7 +140,7 @@ def mixColumns(text):
         c2 = getBin(lis[counter+8])
         c3 = getBin(lis[counter+12])
         counter += 1
-        #Goes to the next 4x4 matrix
+        #Goes to the next 4x4 matrixi
         if counter % 4 == 0:
             counter += 12
         #Matrix multiplication rules
@@ -187,11 +203,11 @@ def getBin(hex):
 
 
 #Writes out to the output file for Parity and MixColumns in hex
-def writeHex(value, name):
+def writeHex(text, name):
     counter = 0
     output = name + "\n"
 
-    for i in value:
+    for i in text:
         output += i + " "
         counter += 1
         if counter % 4 == 0:
@@ -207,19 +223,24 @@ if __name__ == "__main__":
     #Preprocessing
     text = getInput()
     writeLine(text, "Preprocessing:")
+
     #Substitution
     text = substitute(text)
     writeLine(text, "Substitution:")
+
     #Padding
     text = padding(text)
     writeBox(text, "Padding:")
+
     #Shift Rows
     text = shiftRows(text)
     writeBox(text, "ShiftRows:")
+
     #Parity bit
     text = removeNewLine(text)
     text = parityBit(text)
     writeHex(text, "Parity:")
+
     #Mixed Columns
     mixCol = mixColumns(text)
     writeHex(mixCol, "MixColumns:")
