@@ -1,0 +1,25 @@
+useradd root rooter
+login root rooter
+useradd joe water123
+useradd jessie bratz321
+groupadd besties
+usergrp joe best
+usergrp joe besties
+mkfile friends.txt
+chmod friends.txt rw- rwx ---
+logout
+login joe water
+login joe water123
+chown friends.txt jessie
+read friends.txt
+ls friends.txt
+logout
+login jessie bratz321
+mkfile tomthebest.txt
+write tomthebest.txt I am in love with Tom
+read tomthebest.txt
+logout
+login root rooter
+chmod tomthebest.txt rwx rwx rwx
+logout
+end

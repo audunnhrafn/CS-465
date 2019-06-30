@@ -1,0 +1,21 @@
+useradd root password321
+login root password321
+mkfile presents.txt
+mkfile teeth.txt
+useradd santa christmas
+useradd toothfairy brushTeeth2timesAday
+groupadd goodkids
+groupadd badkids
+chown goodkids santa
+chown sadkids toothfairy
+chmod badkids rwx rwx rwx
+chmod good rwx --- rwx
+logout
+login santa christmas
+read goodkids
+read badkids
+execute goodkids
+mkfile needtobuylist.txt
+execute needtobuylist.txt
+logout
+end
